@@ -3,18 +3,24 @@ import Button from "../../Components/Button";
 
 export default function Xox({}){
 
+    const query = new URLSearchParams(window.location.search)
+    const bordSize = query.get('row') || query.get('col') || 3;
+    const bordArr = Array.from({length: bordSize}, _ => Array.from({length: bordSize}, _ => ''));
+    
     const [whosePlay, setWhosePlay] = useState('X');
 
     const [roundStake, setRoundStake] = useState([]);
-    const [bord, setBord] = useState([['','',''],['','',''],['','','']]);
+
+    const [bord, setBord] = useState(bordArr);
     const [winPlayerInfo, setWinPlayerInfo] = useState([false])
+
 
 
     function resetGame(){
         setWhosePlay('X');
         setRoundStake([]);
         setWinPlayerInfo([false])
-        setBord([['','',''],['','',''],['','','']]);
+        setBord(bordArr);
     }
 
 
@@ -48,21 +54,21 @@ export default function Xox({}){
     function handleGameOnClick(e){
         let {dataset} = e.target;
         if(!dataset.index || winPlayerInfo[0]) return;
-        if(roundStake.length < 6 && roundStake.search(dataset.index)) return;
+        if(roundStake.length < 2*bordSize && roundStake.search(dataset.index)) return;
 
         let newRoundStake = roundStake;
-        if(newRoundStake.length == 6) newRoundStake.shift();
+        if(newRoundStake.length == 2*bordSize) newRoundStake.shift();
         newRoundStake.push(dataset.index);
 
         setRoundStake(newRoundStake);
 
         setBord((bord) => {
             let {index} = dataset
-            bord[parseInt(index/3)][index%3] = whosePlay;
+            bord[parseInt(index/bordSize)][index%bordSize] = whosePlay;
 
-            for(let i=0; i<3; i++){
-                for(let j=0; j<3; j++){
-                    if(!newRoundStake.search(i*3 + j)) bord[i][j] = ''
+            for(let i=0; i<bordSize; i++){
+                for(let j=0; j<bordSize; j++){
+                    if(!newRoundStake.search(i*bordSize + j)) bord[i][j] = ''
                 }
             }
 
@@ -92,7 +98,11 @@ export default function Xox({}){
                 ) : (
                     <div className="text-3xl text-center">{whosePlay} Player chance</div>
                 )}
-            <div onClick={handleGameOnClick} className="grid grid-cols-3 sm:gap-5 gap-2 aspect-square w-full max-w-[400px] bg-zinc-600 rounded-lg justify-center items-center sm:p-4 p-3 mt-5">
+            <div onClick={handleGameOnClick} className="grid gap-1 sm:gap-2 aspect-square w-full max-w-[400px] bg-zinc-600 rounded-lg justify-center items-center sm:p-3 p-2 mt-5"
+                style={{
+                    gridTemplateColumns: `repeat(${bordSize}, minmax(0, 1fr))`
+                }}    
+            >
                 {bord.flat(1).map((e, i) => {
                     return <div key={i} data-index={i} className="bg-white rounded-md text-black flex items-center justify-center text-6xl font-semibold w-full aspect-square">
                         {e}
