@@ -3,24 +3,21 @@ import Button from "../../Components/Button";
 
 export default function Xox({}){
 
-    const query = new URLSearchParams(window.location.search)
-    const bordSize = query.get('row') || query.get('col') || 3;
-    const bordArr = Array.from({length: bordSize}, _ => Array.from({length: bordSize}, _ => ''));
-    
     const [whosePlay, setWhosePlay] = useState('X');
-
     const [roundStake, setRoundStake] = useState([]);
+    
+    const [bord, setBord] = useState([[]]);
+    const [bordSize, setBordSize] = useState(3);    
 
-    const [bord, setBord] = useState(bordArr);
     const [winPlayerInfo, setWinPlayerInfo] = useState([false])
 
-
+    const genMat = (size) => Array.from({length: size}, _ => Array.from({length: size}, _ => ''))
 
     function resetGame(){
         setWhosePlay('X');
         setRoundStake([]);
         setWinPlayerInfo([false])
-        setBord(bordArr);
+        setBord(genMat(bordSize));
     }
 
 
@@ -90,6 +87,11 @@ export default function Xox({}){
         if(result[0]) setWinPlayerInfo(result);
     }, [whosePlay])
 
+    useEffect(() => {
+        setBord(genMat(bordSize))
+        resetGame()
+    }, [bordSize])
+
     return <>
         <main className="w-screen h-screen bg-black text-white flex flex-col items-center justify-center px-5 sm:px-10">
             {
@@ -111,6 +113,26 @@ export default function Xox({}){
             </div>
             <div className="mt-5 ">
                 <Button onClick={resetGame} text='royalblue'>Restart</Button>
+            </div>
+            <div className="absolute bottom-2">
+                <button className="bg-white text-black m-1 size-10 rounded-lg font-semibold text-lg sm:hover:opacity-100 active:opacity-100"
+                    style={{
+                        opacity: bordSize == 3 ? '1' : '.5'
+                    }}
+                    onClick={() => setBordSize(3)}
+                >3</button>
+                <button className="bg-white text-black m-1 size-10 rounded-lg font-semibold text-lg sm:hover:opacity-100 active:opacity-100"
+                    style={{
+                        opacity: bordSize == 4 ? '1' : '.5'
+                    }}
+                    onClick={() => setBordSize(4)}
+                >4</button>
+                <button className="bg-white text-black m-1 size-10 rounded-lg font-semibold text-lg sm:hover:opacity-100 active:opacity-100"
+                    style={{
+                        opacity: bordSize == 5 ? '1' : '.5'
+                    }}
+                    onClick={() => setBordSize(5)}
+                >5</button>
             </div>
         </main>
     </>
