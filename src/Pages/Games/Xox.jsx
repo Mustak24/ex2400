@@ -51,7 +51,8 @@ export default function Xox({}){
     function handleGameOnClick(e){
         let {dataset} = e.target;
         if(!dataset.index || winPlayerInfo[0]) return;
-        if(roundStake.length < 2*bordSize && roundStake.search(dataset.index)) return;
+        
+        if(roundStake.search(dataset.index)) return;
 
         let newRoundStake = roundStake;
         if(newRoundStake.length == 2*bordSize) newRoundStake.shift();
