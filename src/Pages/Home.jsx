@@ -14,6 +14,9 @@ export default function Home({}){
                 <Button className="py-2 px-10 ">
                     <Link to={'/games/number-box'} className="font-semibold">Number Box Game</Link>
                 </Button>
+                <Button className="py-2 px-10 ">
+                    <Link to={'/games/2d-raycasting'} className="font-semibold">2D RayCasting</Link>
+                </Button>
             </div>
         </div>
     </>
