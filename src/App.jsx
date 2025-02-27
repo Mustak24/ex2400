@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './Pages/Home'
 import Xox from './Pages/Games/Xox'
 import NumberBox from './Pages/Games/NumberBox'
-import Raycasting2d from './Pages/Games/Raycasting2D'
+import Raycasting2d from './Pages/Games/Raycasting2d'
 
 function App() {
 
