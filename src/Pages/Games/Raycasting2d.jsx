@@ -176,13 +176,9 @@ function useCurrentState(initialValue) {
 
 export default function Raycasting2d({ frameRate = 24 }) {
   const [numberOfWalls, setNumberOfWalls] = useState(3);
-  const [_walls, setWalls, getWalls] = useCurrentState(
-    createWalls(numberOfWalls)
-  );
+  const [_walls, setWalls, getWalls] = useCurrentState(createWalls(numberOfWalls));
   const [numberOfRays, setNumberOfRays, getNumberOfRays] = useCurrentState(100);
   const [windowEvent, setWindowEvent, getWindowEvent] = useCurrentState({});
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
   const canvas = useRef(null);
 
   function createWalls(n) {
@@ -195,17 +191,23 @@ export default function Raycasting2d({ frameRate = 24 }) {
       let y2 = Math.random() * h;
       walls.push(new Line(x1, y1, x2, y2));
     }
-    walls.push(new Line(0, 0, w, 0));
-    walls.push(new Line(w, 0, w, h));
-    walls.push(new Line(w, h, 0, h));
-    walls.push(new Line(0, h, 0, 0));
     return walls;
   }
 
   function draw(context) {
+    let {innerWidth:width, innerHeight:height} = window;
+    
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    context.canvas.width = width;
+    context.canvas.height = height;
 
     let walls = getWalls();
+    
+    walls.push(new Line(0, 0, width, 0));
+    walls.push(new Line(width, 0, width, height));
+    walls.push(new Line(width, height, 0, height));
+    walls.push(new Line(0, height, 0, 0));
+    
     for (let wall of walls) {
       context.strokeStyle = "rgb(255,255,255,.8)";
       wall.show(context);
@@ -252,21 +254,19 @@ export default function Raycasting2d({ frameRate = 24 }) {
   }, [canvas]);
 
   useEffect(() => {
-    window.addEventListener("resize", handleWindowResize);
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleMouseMove);
     return () => {
-      window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleMouseMove);
     };
   }, []);
 
-  function handleWindowResize() {
-    setHeight(window.innerHeight);
-    setWidth(window.innerWidth);
-  }
-
   function handleMouseMove(e) {
-    setWindowEvent(e);
+    if(e.touches)
+      setWindowEvent(e.touches[0]);
+    else
+      setWindowEvent(e);
   }
 
   return (
@@ -275,8 +275,6 @@ export default function Raycasting2d({ frameRate = 24 }) {
         <canvas
           ref={canvas}
           id="canvas"
-          width={width}
-          height={height}
           className="min-w-screen min-h-screen bg-zinc-900 mx-5"
         ></canvas>
         <div className="flex fixed max-sm:flex-col sm:gap-20 gap-5 top-2 left-2 opacity-50 hover:opacity-100 transition-all duration-100 [&_div]:flex [&_div]:items-center [&_div]:gap-5">
